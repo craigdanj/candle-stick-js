@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CandleChart — JavaScript candlestick charts</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b1219;
+        --panel: #101922;
+        --line: #22313f;
+        --text: #e7eff7;
+        --muted: #90a4b8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          14px system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1280px;
+        margin: auto;
+        padding: 38px 36px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 56px;
+      }
+      .brand {
+        font-weight: 750;
+        font-size: 20px;
+        letter-spacing: -0.6px;
+      }
+      .brand b {
+        color: #42d6a4;
+        margin-right: 10px;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .tag {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 6px 12px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .eyebrow {
+        color: #42d6a4;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      h1 {
+        font-size: 44px;
+        letter-spacing: -2px;
+        margin: 12px 0;
+      }
+      p {
+        color: var(--muted);
+        line-height: 1.7;
+      }
+      .intro {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        margin-bottom: 28px;
+      }
+      .intro p {
+        margin-bottom: 0;
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        background: var(--panel);
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      .symbol {
+        font-size: 17px;
+        font-weight: 700;
+        margin-right: auto;
+      }
+      .symbol small {
+        display: block;
+        font-size: 11px;
+        font-weight: 400;
+        color: var(--muted);
+        margin-top: 5px;
+      }
+      button,
+      select {
+        font: inherit;
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--text);
+        border-radius: 7px;
+        padding: 8px 11px;
+        cursor: pointer;
+      }
+      button:hover,
+      button[aria-pressed="true"] {
+        background: #1c3940;
+        border-color: #42d6a4;
+      }
+      select option {
+        background: var(--panel);
+      }
+      #chart {
+        height: 460px;
+        width: 100%;
+      }
+      .foot {
+        padding: 14px 20px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 11px;
+        gap: 12px;
+      }
+      .dot {
+        color: #42d6a4;
+      }
+      .features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin: 34px 0;
+      }
+      .features h3 {
+        font-size: 14px;
+        margin: 0 0 7px;
+      }
+      .features p {
+        font-size: 13px;
+        margin: 0;
+      }
+      .code {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: auto;
+        line-height: 1.8;
+        color: #a9c3d7;
+      }
+      footer {
+        margin-top: 30px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      body.light {
+        color-scheme: light;
+        --bg: #f3f6f9;
+        --panel: #fff;
+        --line: #e1e7ed;
+        --text: #182a39;
+        --muted: #63778b;
+      }
+      button:focus-visible,
+      a:focus-visible {
+        outline: 2px solid #42d6a4;
+        outline-offset: 3px;
+      }
+      @media (max-width: 650px) {
+        main {
+          padding: 22px 14px;
+        }
+        header {
+          margin-bottom: 36px;
+        }
+        h1 {
+          font-size: 34px;
+        }
+        .intro {
+          display: block;
+        }
+        .intro .tag {
+          display: none;
+        }
+        .toolbar {
+          padding: 14px;
+          gap: 7px;
+        }
+        .symbol {
+          width: 100%;
+        }
+        #chart {
+          height: 400px;
+        }
+        .features {
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
+        .foot {
+          flex-direction: column;
+        }
+        .code {
+          font-size: 11px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="#"
+          ><b>▥</b>CandleChart<span
+            style="font-weight: 400; color: var(--muted)"
+            >.js</span
+          ></a
+        ><a class="tag" href="candle-chart.js" download>Download plugin ↗</a>
+      </header>
+      <section class="intro">
+        <div>
+          <div class="eyebrow">A clearer view of every move</div>
+          <h1>Small plugin. Big picture.</h1>
+          <p>
+            Interactive candlestick charts. Pure JavaScript. Zero dependencies.
+          </p>
+        </div>
+        <span class="tag">SVG renderer · v2.0.0</span>
+      </section>
+      <section class="card">
+        <div class="toolbar">
+          <div class="symbol">
+            ACME / USD<small>Synthetic market · demo data only</small>
+          </div>
+          <select id="interval" aria-label="Candle interval">
+            <option value="day">1 day</option>
+            <option value="hour">1 hour</option></select
+          ><button id="volume" aria-pressed="true">Volume</button
+          ><button id="live" aria-pressed="false">▶ Simulate live</button
+          ><button id="reset">Reset</button
+          ><button id="theme" aria-label="Toggle light theme">◐ Theme</button
+          ><button id="export">Export SVG</button>
+        </div>
+        <div id="chart"></div>
+        <div class="foot">
+          <span>Hover for candle data · drag to pan · scroll to zoom</span
+          ><span
+            ><span class="dot">●</span>
+            <span id="status">240 candles · UTC</span></span
+          >
+        </div>
+      </section>
+      <section class="features">
+        <div>
+          <h3>Make it your own</h3>
+          <p>
+            Light and dark themes, custom colors, adjustable precision, and
+            optional volume.
+          </p>
+        </div>
+        <div>
+          <h3>Built for interaction</h3>
+          <p>
+            Cursor-centered zoom, drag navigation, hover tooltips, and keyboard
+            controls.
+          </p>
+        </div>
+        <div>
+          <h3>Ready for your data</h3>
+          <p>
+            Load historical candles, update the current bar, or append new
+            candles as they arrive.
+          </p>
+        </div>
+      </section>
+      <pre
+        class="code"
+      ><code>&lt;script src="candle-chart.js"&gt;&lt;/script&gt;
+&lt;div id="chart" style="height:420px"&gt;&lt;/div&gt;
+&lt;script&gt;
+  const chart = new CandleChart('#chart', { theme: 'dark' });
+  chart.setData([
+    { time: '2026-01-01', open: 100, high: 108, low: 97, close: 105, volume: 1200 }
+  ]);
+&lt;/script&gt;</code></pre>
+      <footer>CandleChart.js · MIT licensed · No data feed included</footer>
+    </main>
+    <script src="candle-chart.js"></script>
+    <script>
+      const chart = new CandleChart("#chart");
+      let interval = 86400000,
+        timer = null,
+        volume = true,
+        theme = "dark",
+        tick = 0;
+      function sample() {
+        let seed = 42,
+          price = 160;
+        const rand = () =>
+          (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+        return Array.from({ length: 240 }, (_, i) => {
+          const open = price,
+            close = Math.max(20, open + (rand() - 0.47) * 7);
+          price = close;
+          return {
+            time: Date.UTC(2026, 0, 1) + i * interval,
+            open,
+            close,
+            high: Math.max(open, close) + rand() * 3,
+            low: Math.min(open, close) - rand() * 3,
+            volume: Math.round(10000 + rand() * 90000),
+          };
+        });
+      }
+      chart.setData(sample());
+      document.querySelector("#interval").onchange = (e) => {
+        interval = e.target.value === "day" ? 86400000 : 3600000;
+        chart.setData(sample());
+        tick = 0;
+      };
+      document.querySelector("#volume").onclick = (e) => {
+        volume = !volume;
+        chart.setOptions({ volume });
+        e.currentTarget.setAttribute("aria-pressed", volume);
+      };
+      document.querySelector("#theme").onclick = () => {
+        theme = theme === "dark" ? "light" : "dark";
+        document.body.classList.toggle("light", theme === "light");
+        chart.setOptions({ theme });
+      };
+      document.querySelector("#reset").onclick = () => chart.resetView();
+      document.querySelector("#live").onclick = (e) => {
+        const button = e.currentTarget;
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+        } else
+          timer = setInterval(() => {
+            const bars = chart.getData(),
+              last = bars[bars.length - 1];
+            let next;
+            if (++tick % 5 === 0)
+              next = {
+                time: last.time + interval,
+                open: last.close,
+                high: last.close,
+                low: last.close,
+                close: last.close,
+                volume: 0,
+              };
+            else next = { ...last };
+            next.close += (Math.random() - 0.48) * 2;
+            next.high = Math.max(next.high, next.close);
+            next.low = Math.min(next.low, next.close);
+            next.volume += Math.round(Math.random() * 6000);
+            chart.update(next);
+            document.querySelector("#status").textContent =
+              chart.data.length + " candles · simulated ticks";
+          }, 700);
+        button.setAttribute("aria-pressed", !!timer);
+        button.textContent = timer ? "■ Pause simulation" : "▶ Simulate live";
+      };
+      document.querySelector("#export").onclick = () => {
+        const a = document.createElement("a");
+        a.href = chart.toDataURL();
+        a.download = "candlestick-chart.svg";
+        a.click();
+      };
+    </script>
+  </body>
+</html>
